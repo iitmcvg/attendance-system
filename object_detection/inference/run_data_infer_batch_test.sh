@@ -1,0 +1,29 @@
+CUDA_VISIBLE_DEVICES='0' \python object_detection/inference/data_infer_batch_test.py \
+--input_path="/media/ssd1/data/1040010018255600_jpg.tif_tiles/19/" \
+--inference_graph="/media/ssd1/sat_data_models/faster_rcnn/large/export/frozen_inference_graph.pb" \
+--output_path="" \
+--shard_path="" \
+--batch_size=1 \
+--test_size=30 \
+--shard=0 \
+--vis_path="output_xxx" &
+
+CUDA_VISIBLE_DEVICES='1' python object_detection/inference/data_infer_batch_test.py \
+--input_path="/media/ssd1/data/1040010018255600_jpg.tif_tiles/19/" \
+--inference_graph="/media/ssd1/sat_data_models/faster_rcnn/large/export/frozen_inference_graph.pb" \
+--output_path="" \
+--shard_path="" \
+--batch_size=1 \
+--test_size=30 \
+--shard=1 \
+--vis_path="output_xxx" &
+
+CUDA_VISIBLE_DEVICES='2' python object_detection/inference/data_infer_batch_test.py \
+--input_path="/media/ssd1/data/1040010018255600_jpg.tif_tiles/19/" \
+--inference_graph="/media/ssd1/sat_data_models/faster_rcnn/large/export/frozen_inference_graph.pb" \
+--output_path="" \
+--shard_path="" \
+--batch_size=1 \
+--test_size=30 \
+--shard=2 \
+--vis_path="output_xxx"

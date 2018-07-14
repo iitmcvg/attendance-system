@@ -1,0 +1,2 @@
+bash object_detection/inference/mask_rcnn_batch/1040010010608200.sh
+bash object_detection/inference/mask_rcnn_batch/104001000FB77500.sh

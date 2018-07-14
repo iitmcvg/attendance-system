@@ -1,0 +1,18 @@
+PascalBoxes_Precision/mAP@0.5IOU,1.0
+PascalBoxes_PerformanceByCategory/AP@0.5IOU/mobile_tower,1.0
+WeightedPascalBoxes_Precision/mAP@0.5IOU,1.0
+WeightedPascalBoxes_PerformanceByCategory/AP@0.5IOU/mobile_tower,1.0
+OpenImagesV2_Precision/mAP@0.5IOU,1.0
+OpenImagesV2_PerformanceByCategory/AP@0.5IOU/mobile_tower,1.0
+DetectionBoxes_Precision/mAP,0.49999999999999994
+DetectionBoxes_Precision/mAP@.50IOU,0.9999999999999999
+DetectionBoxes_Precision/mAP@.75IOU,0.0
+DetectionBoxes_Precision/mAP (small),0.49999999999999994
+DetectionBoxes_Precision/mAP (medium),-1.0
+DetectionBoxes_Precision/mAP (large),-1.0
+DetectionBoxes_Recall/AR@1,0.5
+DetectionBoxes_Recall/AR@10,0.5
+DetectionBoxes_Recall/AR@100,0.5
+DetectionBoxes_Recall/AR@100 (small),0.5
+DetectionBoxes_Recall/AR@100 (medium),-1.0
+DetectionBoxes_Recall/AR@100 (large),-1.0

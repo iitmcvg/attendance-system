@@ -1,0 +1,26 @@
+# Bazel Install
+source /home/user/.bazel/bin/bazel-complete.bash
+export PATH="$PATH:$HOME/bin"
+
+# Tensorboard locale issues (with utf 8)
+export LC_ALL=C
+
+# CUPTI Export
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
+
+# NVIDIA
+export PATH=$PATH:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+# TF Slim linkages, Conda paths
+export PATH=/opt/anaconda3/envs/py27/bin:$PATH
+export PATH=/opt/anaconda3/bin:$PATH
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+
+# Lazy Git
+function lazygit() {
+git add .
+git add -u
+git commit -a -m "$1"
+git push
+  }
