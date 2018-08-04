@@ -4,7 +4,7 @@ __pycache__/
 
 # Pictures
 *.jpg
-*.png
+media/*.png
 
 # Only weights are those of SSD Mobilenet
 *.pb

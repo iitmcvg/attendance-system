@@ -153,7 +153,7 @@ See the corresponding commit thread for details.
 #### Large
 
 ```
-python object_detection/train.py \  
+python object_detection/legacy/train.py \  
 --logtostderr \  
 --pipeline_config_path=detection/configs/ssdlite_mobilenet_v2.config \  
 --train_dir=/media/ssd1/face/ssdlite_v2/large/train  
@@ -170,7 +170,7 @@ Modify the batch-size accordingly, note that this is not per GPU batch-size.
 ---
 ### Running eval
 ```
-python object_detection/eval.py \  
+python object_detection/legacy/eval.py \  
 --logtostderr \  
 --pipeline_config_path=detection/configs/ssdlite_mobilenet_v2.config \  
 --checkpoint_dir=/media/ssd1/face/ssdlite_v2/large/train \  
