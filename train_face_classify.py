@@ -48,7 +48,7 @@ choices=["ssdlite_v2","ssd_mobilenet"],help="detection model to use")
 parser.add_argument("--trained_classifier",default="./classifier/trained_classifier.pkl"
 ,help="trained classifier to use")
 
-parser.add_argument("--classifier",default="SVM",choices=["SVM","KNN","DNN"]
+parser.add_argument("--classifier",default="SVM",choices=["SVM","random-forests","KNN","DNN"]
 ,help="trained classifier to use")
 
 parser.add_argument("--embedding_size",default=512,choices=[128,512]
@@ -72,6 +72,8 @@ elif args.recognition_model=="inception_resnet_v2":
 
 if args.classifier=="SVM":
     model_type="SVM"
+elif args.classifier=="random-forests":
+    model_type="random-forests"
 elif args.classifier=="KNN":
     model_type="knn"
 elif args.classifier=="DNN":

@@ -2,12 +2,12 @@ import os
 import pickle
 import numpy as np
 from sklearn import neighbors, svm
+from sklearn.ensemble import RandomForestClassifier
 
 BASE_DIR = os.path.dirname(__file__) + '/'
 PATH_TO_PKL = 'trained_classifier.pkl'
 
 import tensorflow as tf
-
 
 class FaceClassifier(object):
     def __init__(self, model_path=None):
@@ -27,12 +27,13 @@ class FaceClassifier(object):
         return {'rmse': tf.metrics.root_mean_squared_error(labels, pred_values)}
 
     def train(self, X, y, model='knn', save_model_path=None):
-        if model in ['knn','SVM']:
+        if model.lower() in ['knn','svm','random-forests']:
             if model == 'knn':
                 self.model = neighbors.KNeighborsClassifier(3, weights='uniform')
             elif model=="SVM":  # svm
                 self.model = svm.SVC(kernel='linear', probability=True)
-            
+            elif model =='random-forests':
+                self.model=RandomForestClassifier()
             self.model.fit(X, y)
             if save_model_path is not None:
                 with open(save_model_path, 'wb') as f:
@@ -81,13 +82,12 @@ class FaceClassifier(object):
 
             print("\nTest Accuracy: {0:f}\n".format(accuracy_score))
 
-
-    def classify(self, descriptor,model_type="NN"):
+    def classify(self, descriptor,model_type="SVM"):
         if self.model is None:
             print('Train the model before doing classifications.')
             return
         
-        if model_type.lower() in ['knn','svm']:
+        if model_type.lower() in ['knn','svm','random-forests']:
             print("sklearn model", self.model.predict([descriptor]),self.model.predict_proba([descriptor]))
             return self.model.predict([descriptor])[0],self.model.predict_proba([descriptor])[0]
 
