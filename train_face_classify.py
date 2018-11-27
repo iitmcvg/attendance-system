@@ -33,17 +33,18 @@ import os
 import numpy as np
 from recognition.facenet import get_dataset
 from recognition.FaceRecognition import FaceRecognition
-from detection.FaceDetector import FaceDetector
+from detection.FaceDetector_tiny import FaceDetector
 from classifier.FaceClassifier import FaceClassifier
 import argparse
+from keras.preprocessing.image import ImageDataGenerator
 
 parser=argparse.ArgumentParser()
 
-parser.add_argument("--recognition_model",default="mobilenet_v2",
+parser.add_argument("--recognition_model",default="inception_resnet_v2",#changed default
 choices=["inception_resnet_v1","mobilenet_v2","inception_resnet_v2"])
 
 parser.add_argument("--detection_model",default="ssdlite_v2",
-choices=["ssdlite_v2","ssd_mobilenet"],help="detection model to use")
+choices=["ssdlite_v2","ssd_mobilenet","faster_rcnn"],help="detection model to use")
 
 parser.add_argument("--trained_classifier",default="./classifier/trained_classifier.pkl"
 ,help="trained classifier to use")
@@ -53,15 +54,17 @@ parser.add_argument("--classifier",default="SVM",choices=["SVM","random-forests"
 
 parser.add_argument("--embedding_size",default=512,choices=[128,512]
 ,help="Embedding Size")
-
+mobilenet=False
 datadir = './media/train_classifier'
 
 args=parser.parse_args()
-
 if args.detection_model=="ssdlite_v2":
     detect_ckpt = 'model/ssdlite_v2.pb'
 elif args.detection_model=="ssd_mobilenet":
     detect_ckpt = 'model/ssd_mobilenet.pb'
+elif args.detection_model=="faster_rcnn":
+    detect_ckpt = "model/faster_rcnn_resnet50.pb"
+
 
 if args.recognition_model=="inception_resnet_v1":
     recog_ckpt = 'model/inception_resnet-20180402-114759.pb'
@@ -78,7 +81,7 @@ elif args.classifier=="KNN":
     model_type="knn"
 elif args.classifier=="DNN":
     model_type="dnn"
-
+mobilenet=False
 if args.recognition_model=="mobilenet_v2":
     mobilenet=True
 
@@ -119,6 +122,14 @@ for i in range(nrof_images):
     cropped_face_flip = cv2.flip(cropped_face,1)
     features[2*i,:] = face_recognition.recognize(cropped_face,mobilenet=mobilenet)
     features[2*i+1,:] = face_recognition.recognize(cropped_face_flip,mobilenet=mobilenet)
+
+np.save('features',features)
+np.save('labels',labels)
+'''trained on 8 classes . 1110 images . accuracy:0.9617117117117117
+precision,accuracy and f1 score is (array([0.98387097, 1.        , 0.82461538, 0.9887218 , 0.98245614,
+       0.9858156 , 0.95955882, 0.99618321]), array([0.87142857, 1.        , 0.97101449, 0.99621212, 0.9929078 ,
+       0.99285714, 0.93884892, 0.93214286]), array([0.92424242, 1.        , 0.89184692, 0.99245283, 0.98765432,
+       0.98932384, 0.94909091, 0.96309963]), array([280, 280, 276, 264, 282, 280, 278, 280]))'''
 
 print('Start training for images')
 face_classfier.train(features, labels, model=model_type, save_model_path=args.trained_classifier)

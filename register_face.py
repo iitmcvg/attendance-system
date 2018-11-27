@@ -35,9 +35,9 @@ from detection.FaceDetector import FaceDetector
 from recognition.FaceRecognition import FaceRecognition
 from classifier.FaceClassifier import FaceClassifier
 import argparse
-
+import os
 parser=argparse.ArgumentParser()
-
+import skimage.io as io
 parser.add_argument("--recognition_model",default="mobilenet_v2",
 choices=["inception_resnet_v1","mobilenet_v2","inception_resnet_v1_old"])
 
@@ -47,7 +47,7 @@ choices=["ssdlite_v2","ssd_mobilenet"],help="detection model to use")
 parser.add_argument("--trained_classifier",default="./classifier/trained_classifier.pkl"
 ,help="trained classifier to use")
 
-parser.add_argument("--attendance_file",default="attendance.txt"
+parser.add_argument("--attendance_file",default="./attendance.txt"
 ,help="Output attendance file to use.")
 
 parser.add_argument("--attendance_csv",default="attendance.csv"
@@ -55,6 +55,7 @@ parser.add_argument("--attendance_csv",default="attendance.csv"
 
 parser.add_argument("--clear",default=""
 ,help="Clear attendance or not.")
+
 
 # Camera
 parser.add_argument("--camera",default=0,
@@ -73,7 +74,7 @@ elif args.recognition_model=="mobilenet_v2":
     recog_ckpt = 'model/mobilenet_v2.pb'
 elif args.recognition_model=="inception_resnet_v1_old":
     recog_ckpt = 'model/inception_resnet_v1_20170512-110547.pb'
-
+mobilenet=False
 if args.recognition_model=="mobilenet_v2":
     mobilenet=True
 
@@ -92,33 +93,44 @@ def _update_attendance(attendance_list):
 face_detector = FaceDetector(PATH_TO_CKPT=detect_ckpt)
 face_recognition = FaceRecognition(PATH_TO_CKPT=recog_ckpt)
 face_classfier = FaceClassifier(args.trained_classifier)
-video_capture = cv2.VideoCapture(args.camera)
+#video_capture = cv2.VideoCapture(args.camera)
 
 print('Start Recognition!')
 prevTime = 0
 count=0
 attendance_list=[]
-
+i=1
 while True:
-    ret, frame = video_capture.read()
-    if(ret ==0):
-        continue
-    #frame = cv2.resize(frame, (0, 0), fx=0.4, fy=0.4)  # resize frame (optional)
-
+    j=37+i
+    path = './media/train_classifier/milind/'
+    frame= cv2.imread(path+'WhatsApp Image 2018-11-01 at 9.23.%d PM.jpeg'%j)
+    print('%dth recognition'%i)
+    i+=1
+    
+    #if np.size(frame)==1:
+    #    continue
+    frame = cv2.resize(frame, (600,600))  # resize frame (optional)
+    '''cv2.imshow('frame',frame)
+    cv2.waitKey(0) & 0xFF
+    cv2.destroyAllWindows()'''
     curTime = time.time()  # calc fps
     find_results = []
 
     frame = frame[:, :, 0:3]
     boxes, scores = face_detector.detect(frame)
-    face_boxes = boxes[np.argwhere(scores>0.3).reshape(-1)]
+    #print(scores)
+    face_boxes = boxes[np.argwhere(scores>0.3).reshape(-1)] 
     face_scores = scores[np.argwhere(scores>0.3).reshape(-1)]
     print('Detected_FaceNum: %d' % len(face_boxes))
 
     print('Registering only the maximum score face.')
-
+    name='milind'
     box_ii=np.argmax(face_scores)
-
-    path=os.path.join("media","train_image_classifier",name)
+    print(box_ii)
+    path=os.path.join("media","train_classifier",'milind')
+    attendance_list.append(name)
+    _update_attendance(attendance_list)
+    #print(type(path))
     if not os.path.exists(path):
         os.mkdir(path)
    
@@ -128,16 +140,18 @@ while True:
         box = face_boxes[box_ii]
         cropped_face = frame[box[0]:box[2], box[1]:box[3], :]
         cropped_face = cv2.resize(cropped_face, (160, 160), interpolation=cv2.INTER_AREA)
+
         feature = face_recognition.recognize(cropped_face,mobilenet=mobilenet)
         print("len features {}".format(len(feature)))
-        name = face_classfier.classify(feature)
-
+        name_features = face_classfier.classify(feature)
+        #madeachange
+        print('name features',name_features)
         if os.path.exists(os.path.join("media","train_image_classifier",name)):
             continue
         # Expand by 20 pixels
         save_face=frame[box[0]-20:box[2]+20, box[1]-20:box[3]+20, :]
-
-        cv2.imsave(os.path.join(path,name+"_"+count+".jpg"),save_face)
+        #print(type(save_face))
+        #cv2.imwrite(os.path.join(path,name+"_"+"%d"%(count)+".jpg"),save_face)
 
         count+=1
 
@@ -161,15 +175,16 @@ while True:
                 cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=2)
 
     cv2.imshow('Video', frame)
-
+    cv2.imshow('cropped face',cropped_face)
     if count==16:
         break
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if i==10:
+        break
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         break
 
     count+=1
 
-video_capture.release()
+#video_capture.release()
 cv2.destroyAllWindows()
 

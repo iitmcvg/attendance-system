@@ -1,7 +1,7 @@
 import os
 import pickle
 import numpy as np
-from sklearn import neighbors, svm
+from sklearn import neighbors, svm,metrics
 from sklearn.ensemble import RandomForestClassifier
 
 BASE_DIR = os.path.dirname(__file__) + '/'
@@ -26,18 +26,25 @@ class FaceClassifier(object):
         pred_values = predictions['predictions']
         return {'rmse': tf.metrics.root_mean_squared_error(labels, pred_values)}
 
-    def train(self, X, y, model='knn', save_model_path=None):
-        if model.lower() in ['knn','svm','random-forests']:
+    def train(self, X, y, model='random-forests', knn_neighbours=3,save_model_path=None):
+        if model.lower() in ['knn','svm','random-forests','svc-poly','svc-rbf']:
             if model == 'knn':
-                self.model = neighbors.KNeighborsClassifier(3, weights='uniform')
-            elif model=="SVM":  # svm
+                self.model = neighbors.KNeighborsClassifier(knn_neighbours, weights='uniform')
+            elif model=="SVM": 
                 self.model = svm.SVC(kernel='linear', probability=True)
             elif model =='random-forests':
                 self.model=RandomForestClassifier()
+            elif model == 'svc-rbf' :
+                self.model = svm.SVC(kernel='rbf',probability=True)
+            elif model == 'svc-poly' :
+                self.model = svm.SVC(kernel='poly',probability=True)            
             self.model.fit(X, y)
+            print(metrics.accuracy_score(y,self.model.predict(X)))
             if save_model_path is not None:
                 with open(save_model_path, 'wb') as f:
                     pickle.dump(self.model, f)
+        
+
 
         else:
             # Specify that all features have real-value data
@@ -54,7 +61,7 @@ class FaceClassifier(object):
                                                     n_classes=len(X),
                                                     model_dir="NN_model",
                                                     config = run_config)
-            classifier = tf.contrib.estimator.add_metrics(classifier, my_rmse)
+            classifier = tf.contrib.estimator.add_metrics(classifier, my_rmse(y,self.model.predict(X)))
             # Define the training inputs
             train_input_fn = tf.estimator.inputs.numpy_input_fn(
                 x={"X": np.array(X)},
@@ -87,9 +94,26 @@ class FaceClassifier(object):
             print('Train the model before doing classifications.')
             return
         
-        if model_type.lower() in ['knn','svm','random-forests']:
-            print("sklearn model", self.model.predict([descriptor]),self.model.predict_proba([descriptor]))
-            return self.model.predict([descriptor])[0],self.model.predict_proba([descriptor])[0]
+        if model_type.lower() in ['knn','svm','random-forests','svc-poly','svc-rbf']:               
+                print("sklearn model", self.model.predict([descriptor]),self.model.predict_proba([descriptor]))
+                return self.model.predict([descriptor])[0],self.model.predict_proba([descriptor])[0]
 
         else:
             pass
+    def ensemble(self,descriptor):
+        with open('./classifier/new_classifiers/trained_svm.pkl','rb') as f:
+            model1 = pickle.load(f)
+        with open('./classifier/new_classifiers/knn_5.pkl','rb') as f:
+            model6 = pickle.load(f)
+        with open('./classifier/new_classifiers/knn_7.pkl','rb') as f:
+            model2 = pickle.load(f)
+        with open('./classifier/new_classifiers/random_forests.pkl','rb') as f:
+            model3 = pickle.load(f)   
+        with open('./classifier/new_classifiers/trained_svm_rbf.pkl','rb') as f:
+            model4 = pickle.load(f)       
+        with open('./classifier/new_classifiers/trained_svm_poly.pkl','rb') as f:
+            model5 = pickle.load(f)                
+        model_avg = (model1.predict_proba([descriptor])[0]+0.75*model2.predict_proba([descriptor])[0]+0.75*model3.predict_proba([descriptor])[0])/2.5
+        return np.argmax(model_avg),model_avg
+        #return (model1.predict([descriptor][0])+model2.predict([descriptor])[0]+model3.predict([descriptor])[0])/3,
+        #    (model1.predict_proba([descriptor])[0]+model2.predict_proba([descriptor])[0]+model3.predict_proba([descriptor])[0])/3

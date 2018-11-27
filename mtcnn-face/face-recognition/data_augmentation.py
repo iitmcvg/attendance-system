@@ -32,7 +32,7 @@ def align_face(image, l_eye, r_eye, desiredLeftEye = (0.35,0.35),desiredFaceWidt
 detector = MTCNN()
 
 
-def gamma_factor(img ,gamma ):
+def gamma_factor(img ,gamma):
     """
     Uses Gamma factor Power Transform to enhance image quality
     Parameters
