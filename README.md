@@ -15,7 +15,7 @@ Primarily, we use this in two use cases:
 * High accuracy: SSD or FRCNN detectors with Inception-Resnet feature extractors.
 * CPU optimised FPS: SSDlite mobilenet with mobilenet V2 extractors (this is covered in *getting started*).
 
-We have 
+We have experimented with multiple classifiers for error free student identification.
 
 ## Sample Results
 
