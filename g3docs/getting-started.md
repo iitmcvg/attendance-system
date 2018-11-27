@@ -17,6 +17,8 @@ There needs to be a minimum of two subjects.
 
 Download the following models from here:
 
+* [SSD Mobilenet v1](https://github.com/yeephycho/tensorflow-face-detection/blob/master/model/frozen_inference_graph_face.pb)
+
 * [SSDLite mobilenet](https://drive.google.com/open?id=1k6ZXrgo4f0tU18tqlMLjN5tTb_6mwnsS): Place under detection/model/ssdlite_v2.pb [This can be customised]. 
 
 * [Facenet Mobilenet](https://drive.google.com/open?id=1sBHIXC66tdKlj7pd9zxaEpxcGJmC5NA1): Place the frozen_inference.pb under detection/model/mobilenet_v2.pb [This can be customised]. 
