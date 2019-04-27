@@ -1,6 +1,6 @@
 # Face Recognition
 
-Computer Vision and1 Intelligence Group, IIT Madras
+Computer Vision and Intelligence Group, IIT Madras
 
 ![avatar](g3docs/avatar.png)
 
@@ -54,7 +54,7 @@ We have experimented with multiple classifiers for error free student identifica
 ## Dependencies
 
 * Python 3.4+
-* Tensorflow 1.6+
+* Tensorflow 1.7+
 * Opencv 3.3.1+
 
 ## Pipeline
